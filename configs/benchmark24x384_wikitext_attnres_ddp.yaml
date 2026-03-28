@@ -1,0 +1,46 @@
+model:
+  vocab_size: 50257
+  max_seq_len: 512
+  d_model: 384
+  num_heads: 6
+  num_layers: 24
+  mlp_hidden_dim: 1024
+  attn_dropout: 0.0
+  resid_dropout: 0.0
+  rope_base: 10000.0
+  residual_mode: block_attnres
+  num_blocks: 8
+  depth_normalizer: softmax
+  depth_temperature: 1.0
+  topk_softmax_k: 2
+  tie_embeddings: true
+
+data:
+  dataset_name: wikitext103
+  tokenizer_name: openai-community/gpt2
+  seq_len: 512
+  max_train_texts: 4000
+  max_val_texts: 400
+  num_proc: 1
+
+train:
+  experiment_name: benchmark24x384_wikitext_attnres_ddp
+  seed: 42
+  output_root: results
+  batch_size: 16
+  eval_batch_size: 8
+  grad_accum_steps: 1
+  learning_rate: 0.00025
+  weight_decay: 0.1
+  betas: [0.9, 0.95]
+  warmup_steps: 20
+  max_steps: 40
+  eval_interval: 20
+  eval_batches: 4
+  log_interval: 10
+  num_workers: 2
+  amp_dtype: fp16
+  clip_grad_norm: 1.0
+  compile: false
+  save_steps: [20, 40]
+  save_initial_checkpoint: false

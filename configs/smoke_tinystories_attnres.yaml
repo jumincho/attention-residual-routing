@@ -1,0 +1,44 @@
+model:
+  vocab_size: 50257
+  max_seq_len: 256
+  d_model: 256
+  num_heads: 4
+  num_layers: 12
+  mlp_hidden_dim: 768
+  attn_dropout: 0.0
+  resid_dropout: 0.0
+  rope_base: 10000.0
+  residual_mode: block_attnres
+  num_blocks: 4
+  depth_normalizer: softmax
+  depth_temperature: 1.0
+  topk_softmax_k: 2
+  tie_embeddings: true
+
+data:
+  dataset_name: tinystories
+  tokenizer_name: openai-community/gpt2
+  seq_len: 256
+  max_train_texts: 5000
+  max_val_texts: 500
+  num_proc: 1
+
+train:
+  experiment_name: smoke_tinystories_attnres
+  seed: 42
+  output_root: results
+  batch_size: 4
+  eval_batch_size: 4
+  grad_accum_steps: 2
+  learning_rate: 0.0003
+  weight_decay: 0.1
+  betas: [0.9, 0.95]
+  warmup_steps: 10
+  max_steps: 20
+  eval_interval: 10
+  eval_batches: 5
+  log_interval: 5
+  num_workers: 2
+  amp_dtype: fp16
+  clip_grad_norm: 1.0
+  compile: false
