@@ -1,4 +1,18 @@
+<div align="center">
+
 # attention-residual-routing
+
+**어텐션 잔차로 입력별 깊이 라우팅을 학습할 수 있는가**
+**Can attention-residual signal learn per-input depth routing?**
+
+![Status](https://img.shields.io/badge/status-dormant-lightgrey)
+![Language](https://img.shields.io/badge/language-Python-3776AB?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
+![Closure](https://img.shields.io/badge/closure-2026--03-blue)
+
+**한국어** · [English](#english)
+
+</div>
 
 > 🧊 **휴면(dormant) 중인 연구 파일럿입니다.**
 
@@ -59,7 +73,6 @@
 ├── src/attnres_routing/   모델 / 라우팅 / 데이터 / 분석 / 학습 / 매니페스트
 ├── scripts/               학습·평가·집계·파이프라인 진입점들
 ├── configs/               라운드별 실험 설정
-├── tests/                 단위 / smoke 테스트
 ├── reports/               최종 보고서 (한국어 / 영문)
 └── requirements.txt
 ```
@@ -78,3 +91,91 @@ export HF_TOKEN=...   # 필요한 경우에만
 ## 상태
 
 🧊 **휴면 중** — 좁고 재현 가능한 품질 우위는 남았지만, 실제 속도 우위까지는 가지 못한 상태입니다.
+
+---
+
+<a name="english"></a>
+
+## English
+
+> 🧊 **Dormant research pilot.**
+
+### What this set out to test
+
+Layers inside a language model do not all do the same amount of work on every input. Some sequences resolve in shallow layers; others need the deeper stack. The starting question was: **can we read some internal signal that says "this input needs depth" — and skip layers when it doesn't?**
+
+Three core hypotheses:
+
+- An internal signal (attention-style residuals) reveals per-input "how much depth is needed."
+- That signal supports per-input skip decisions.
+- The skipping cuts compute and real wall-clock latency while preserving quality.
+
+Tested at small scale first, then scaled up to larger models and more diverse corpora (WikiText, TinyStories, OpenWebText, FineWeb, CC News, etc.).
+
+### What it found
+
+- **The signal itself is real.** Per-depth utilization measurably varies by input.
+- **The general "skips that work across datasets" policy didn't hold.** When converted into a routing policy, it often failed to beat a static baseline that always skips the same layers.
+- **One narrow result did survive.** On a specific corpus (`cc_news`), a small reproducible quality edge held across seeds and even on a fresh lockbox split.
+- **But it did not translate into actual speed.** Quality improved slightly; wall-clock latency was worse than the static policy because of the dynamic-skip overhead.
+
+Full results:
+
+- 🇰🇷 [`reports/PROJECT_FINAL_REPORT_KO.md`](reports/PROJECT_FINAL_REPORT_KO.md)
+- 🇬🇧 [`reports/PROJECT_FINAL_REPORT_EN.md`](reports/PROJECT_FINAL_REPORT_EN.md)
+
+### Why it's on hold
+
+The signal is real and produces a reproducible — though narrow — quality edge. What it doesn't do is become a **faster** system, and it doesn't transfer to other corpora. Waiting for a fresh angle (different data, lighter selector, different routing geometry) is the natural next step rather than continuing on the current path.
+
+### Where to look first when revisiting
+
+- 🇬🇧 [`reports/PROJECT_FINAL_REPORT_EN.md`](reports/PROJECT_FINAL_REPORT_EN.md) — full final report.
+- [`src/attnres_routing/`](src/attnres_routing/) — core library (model, routing, data, analysis).
+- The YAMLs in the late-round config folders are the cleanest snapshot of the final experimental shape.
+
+### Code map
+
+| File | What it does |
+|---|---|
+| [`src/attnres_routing/model.py`](src/attnres_routing/model.py) | Decoder model + attention-residual hooks |
+| [`src/attnres_routing/routing.py`](src/attnres_routing/routing.py) | Per-input layer-skip routing logic |
+| [`src/attnres_routing/analysis.py`](src/attnres_routing/analysis.py) | Summary metrics and statistics |
+| [`src/attnres_routing/data.py`](src/attnres_routing/data.py) | Dataset preparation |
+| [`src/attnres_routing/sequence_manifest.py`](src/attnres_routing/sequence_manifest.py) | Train / val / lockbox split manifests |
+| [`scripts/train_lm.py`](scripts/train_lm.py) | Base training entrypoint |
+| [`scripts/evaluate_functional_oracles.py`](scripts/evaluate_functional_oracles.py) | Evaluation against oracle policies |
+| [`scripts/evaluate_prompt_routing.py`](scripts/evaluate_prompt_routing.py) | Early per-input routing evaluation |
+| [`scripts/train_candidate_conditioned_ranker_v7.py`](scripts/train_candidate_conditioned_ranker_v7.py) | Late-round candidate-conditioned selector training |
+| [`scripts/evaluate_deployment_measurement_v7.py`](scripts/evaluate_deployment_measurement_v7.py) | Joint quality + latency measurement |
+| [`scripts/build_lockbox_manifests_v9.py`](scripts/build_lockbox_manifests_v9.py) | Unseen validation split construction |
+
+### Folder map
+
+```
+.
+├── src/attnres_routing/   model / routing / data / analysis / training / manifests
+├── scripts/               training, evaluation, aggregation entrypoints
+├── configs/               per-round experiment configs
+├── reports/               final reports (KO / EN)
+└── requirements.txt
+```
+
+Large artifacts (datasets, results, logs, external dependencies) are not included in this archive.
+
+### Environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export HF_TOKEN=...   # only if needed
+```
+
+### Status
+
+🧊 **Dormant** — a narrow reproducible quality edge survives; the speed win did not.
+
+### License
+
+Released under [CC BY-NC 4.0](./LICENSE).
