@@ -1,3 +1,42 @@
+"""Routing policies and teacher-forced decode utilities.
+
+This module is the "what do we do with the signal?" half of the experiment.
+:mod:`attnres_routing.analysis` turns recorded depth weights into
+per-source ``utility`` (plus its per-chunk variance and top-k frequency);
+this module reads those three vectors and decides *which blocks to keep*.
+
+Routing score vocabulary — these are the three score modes that appear in
+configs and in the closure reports:
+
+- ``utility`` — raw per-source utility, the simplest signal.
+- ``utility_over_variance`` — divides by per-chunk variance, prefers
+  depths that are *consistently* useful across the prompt.
+- ``utility_times_topk_frequency`` — multiplies by how often a depth lands
+  in the per-chunk top-k, prefers depths that *show up* in many chunks.
+
+Route-construction helpers (all produce a per-block boolean keep mask):
+
+- :func:`select_prompt_fixed_route` — score-based selection with optional
+  tertile diversity and forced final-block keep; the "smart" baseline.
+- :func:`balanced_skip_route` — deterministic evenly-spaced static skips;
+  the *unbeatable static* baseline that closure reports compare against.
+- :func:`random_skip_route` — random control.
+
+Decode-side helpers:
+
+- :func:`filter_past_key_values` / :func:`stack_past_key_values` — handle
+  KV-cache management when blocks are routed off (a routed-off attention
+  block must drop its KV entry instead of returning a stale cache).
+- :func:`teacher_forced_decode_logits` and its split-mask variants run a
+  prompt prefill followed by a token-by-token decode under chosen masks;
+  :func:`teacher_forced_decode_timing` does the same but also returns
+  :class:`TimingResult` with the prefill / decode / route-overhead wall-
+  clock split. That overhead split is the headline number behind "quality
+  improved but wall-clock latency did not."
+- :func:`continuation_loss` family — token-level losses on the
+  continuation portion of the sequence only, used as the routing
+  evaluation metric.
+"""
 from __future__ import annotations
 
 import math
