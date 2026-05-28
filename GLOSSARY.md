@@ -32,16 +32,7 @@ CLI args use to name a dataset.
 | `cc_news` | `cc_news` | The narrow corpus where the only surviving quality edge held across seeds and on the lockbox split. Heavy presence in v7/v8/v9. |
 | `fineweb_edu_sample10bt` | `HuggingFaceFW/fineweb-edu` / `sample-10BT` | Big-corpus generalization round. Uses HF range slices `train[:12000]` / `train[12000:14000]` / `train[14000:16000]` so train / validation / test are disjoint slices of the same sample. |
 | `fineweb_edu_sample10bt_stream` | same | Streaming variant — same offsets / limits but consumed via `datasets` streaming when the full sample doesn't fit on disk. |
-| `fineweb_edu_sample10bt_local_v7` | local JSONL under `data/third_corpus_v7/*.jsonl` | The v7 frozen offline snapshot. The path is hardcoded inside `DATASET_ALIASES` because the closure reports name results by this alias. |
-
-### `_v7` suffix on dataset aliases
-
-`_v7` on `fineweb_edu_sample10bt_local_v7` means *the v7-round frozen
-snapshot of that corpus on disk*. It's kept as its own alias instead of
-being a runtime flag because closure-report tables refer to results by
-alias string; replacing the alias would break those cross-references. The
-streaming variant exists for the same reason (different consumption mode →
-different alias).
+| `fineweb_edu_sample10bt_local_v7` | local JSONL under `data/third_corpus_v7/*.jsonl` | The v7 frozen offline snapshot. |
 
 ---
 
@@ -148,9 +139,7 @@ depth attention is to its top picks.
 ## Config rounds (`configs/scale_heterogeneity_v*/`)
 
 The pilot scaled up round by round. Each round's configs live in their own
-folder and are referenced by closure reports under their `_v*` name. The
-folder names are kept on purpose — renaming them would break the cross-
-references in the reports.
+folder and are referenced by closure reports under their `_v*` name.
 
 | Folder | What this round was for |
 |---|---|
@@ -177,8 +166,7 @@ on. The lockbox manifests are built by
 document carries a stable `document_uid`. The point of the lockbox is to
 catch the case where the v7/v8 quality edge was a model-selection artifact
 on the same validation pool the ranker was tuned against. The narrow
-`cc_news` edge survives this test; that survival is the load-bearing
-sentence in the closure reports.
+`cc_news` edge survives this test.
 
 ---
 
@@ -231,16 +219,3 @@ sequence and penalizes `1 - cos(h_t - h_r, h_r - h_s)`. The intent is to
 keep hidden-state trajectories locally smooth so that block-skipping is a
 small perturbation rather than a discontinuity. Controlled by
 `TrainConfig.stp_weight` (0 disables) and `TrainConfig.stp_num_triplets`.
-
----
-
-## Why the `_v5`/`_v6`/`_v7`/`_v8`/`_v9` and `_v7` dataset-alias suffixes are preserved
-
-The closure reports refer to specific runs by their on-disk paths
-(`configs/scale_heterogeneity_v7/.../foo.yaml`,
-`fineweb_edu_sample10bt_local_v7`, the v9 lockbox-manifest scripts). The
-suffixes are *primary keys* in those reports. Renaming any of them would
-silently invalidate cross-references. The cost of preserving them is
-that the alias names look slightly redundant — that's the trade. This
-glossary serves as the bridge: the suffix stays on disk, the meaning is
-documented here.
