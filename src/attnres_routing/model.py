@@ -1,3 +1,44 @@
+"""Decoder language model with the block-attention-residual stack.
+
+This module owns the actual transformer the pilot is studying.
+``DecoderLM`` runs in one of two ``residual_mode`` settings:
+
+- ``"standard"`` — a vanilla pre-LN decoder with RMSNorm, rotary position
+  embeddings, SwiGLU MLP, and SDPA. This is the baseline column in every
+  comparison table.
+- ``"block_attnres"`` — the same decoder, but every attention sub-layer and
+  every MLP sub-layer reads through a :class:`DepthMix` head that attends
+  over *all earlier block outputs* before doing its own work. The depth
+  attention weights produced by these heads are the per-input "internal
+  signal" the whole experiment is about; they are what
+  :mod:`attnres_routing.analysis` later turns into per-source utility.
+
+What lives here:
+
+- :class:`AttnResConfig` — single dataclass with both standard decoder
+  hyperparameters (``vocab_size``, ``d_model``, ``num_heads``,
+  ``num_layers``, ``mlp_hidden_dim``, ``max_seq_len``, ``rope_base``,
+  ``attn_dropout``, ``resid_dropout``, ``tie_embeddings``) and the
+  attention-residual extras (``num_blocks``, ``depth_normalizer``,
+  ``depth_temperature``, ``topk_softmax_k``, ``residual_mode``).
+- :class:`RotaryEmbedding` and :func:`apply_rotary_pos_emb` — RoPE
+  positional encoding with a small cache.
+- :class:`CausalSelfAttention` — QKV → SDPA → out_proj, with KV-cache
+  support so the routing eval can prefill once and decode step-by-step.
+- :class:`SwiGLU` — gated MLP used by the standard and attnres stacks.
+- :class:`DepthMix` — the head that turns earlier block outputs into a
+  mixed input for the next attention/MLP sub-layer. Calls
+  :func:`attnres_routing.normalizers.depth_normalize` and optionally
+  records per-source weights for analysis (``record_mode`` is
+  ``"none"`` / ``"summary"`` / ``"full"``).
+- :class:`DecoderLM` itself — wires layers into blocks via
+  ``_build_block_sizes`` / ``layer_to_block``, supports per-block
+  ``active_block_mask`` / ``active_attn_block_mask`` /
+  ``active_mlp_block_mask`` so routing can skip blocks or specific sub-
+  layers at inference time. ``forward`` dispatches to
+  ``_baseline_forward`` for ``standard`` mode and ``_attnres_forward``
+  for ``block_attnres`` mode.
+"""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
