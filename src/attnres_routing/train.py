@@ -1,3 +1,39 @@
+"""Base language-model training loop (no routing — just pretraining).
+
+This is the trainer that ``scripts/train_lm.py`` calls. It owns the
+"normal" half of the experiment: given a config, fit a ``DecoderLM`` to
+next-token prediction on one of the registered datasets. Routing is *not*
+trained here — routing is downstream evaluation on top of these
+checkpoints (see :mod:`attnres_routing.routing` and the various
+``scripts/evaluate_*`` and ``scripts/train_candidate_conditioned_ranker_*``
+entrypoints).
+
+What this module owns:
+
+- :class:`TrainConfig` — full training-side hyperparameters (seed, lr,
+  warmup / cosine schedule, grad accumulation, AMP dtype, checkpointing,
+  routing-/usage-entropy regularizer knobs, the STP regularizer knobs).
+- :func:`train_experiment` — the actual train/eval loop. Handles DDP
+  init, dataset prep via :mod:`attnres_routing.data`, AdamW with
+  param-group weight-decay split, AMP via ``GradScaler``, cosine LR via
+  :func:`attnres_routing.utils.cosine_lr`, periodic eval, best-checkpoint
+  tracking, per-step metrics CSV, loss-curve / source-usage plots, and
+  the closure-friendly ``summary.json`` / ``summary.csv`` rows.
+- :func:`routing_regularizer` — optional entropy floor on the per-layer
+  depth weights (``routing_entropy_*``) and on the aggregate per-source
+  usage distribution (``source_usage_entropy_*``). Encourages the
+  attention-residual stack not to collapse onto a single depth source.
+- :func:`stp_regularizer` — "smooth trajectory penalty": penalizes
+  hidden-state trajectories whose forward and backward chord directions
+  diverge in cosine. Optional, weight 0 disables it.
+- :func:`evaluate` — held-out val loss / perplexity, plus the STP
+  diagnostic.
+- :func:`save_checkpoint`, :func:`save_metrics_csv`,
+  :func:`append_summary`, :func:`plot_training`,
+  :func:`save_source_usage_plot` — IO and diagnostic plot helpers.
+- :func:`init_distributed` / :func:`cleanup_distributed` /
+  :func:`unwrap_model` / :func:`reduce_scalar` — DDP plumbing.
+"""
 from __future__ import annotations
 
 import csv
