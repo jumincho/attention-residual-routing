@@ -26,10 +26,10 @@ CLI args use to name a dataset.
 | Alias | Underlying HF dataset | Notes |
 |---|---|---|
 | `tinystories` | `roneneldan/TinyStories` | Smallest smoke / debug corpus. Used in `configs/smoke_tinystories_*.yaml` for round-zero sanity. |
-| `wikitext103` | `wikitext` / `wikitext-103-raw-v1` | The screening / trajectory baseline corpus. Used in the `screen_wikitext_*` and `trajectory24x384_wikitext_*` configs and in the v5/v6 standard-baseline rows of the closure reports. |
+| `wikitext103` | `wikitext` / `wikitext-103-raw-v1` | The screening / trajectory baseline corpus. Used in the `screen_wikitext_*` and `trajectory24x384_wikitext_*` configs and in the v6 standard-baseline rows of the closure reports. |
 | `openwebtext10k` | `stas/openwebtext-10k` | Mid-size web corpus added in the second-corpus rounds (v6/v7). |
 | `c4_en` | `c4` / `en` | English C4. Used as a second-corpus diversity check. |
-| `cc_news` | `cc_news` | The narrow corpus where the only surviving quality edge held across seeds and on the lockbox split. Heavy presence in v7/v8/v9. |
+| `cc_news` | `cc_news` | The narrow corpus where the only surviving quality edge held across seeds and on the lockbox split. First appears in v5 at 24x512 and stays the focus through v7/v8/v9. |
 | `fineweb_edu_sample10bt` | `HuggingFaceFW/fineweb-edu` / `sample-10BT` | Big-corpus generalization round. Uses HF range slices `train[:12000]` / `train[12000:14000]` / `train[14000:16000]` so train / validation / test are disjoint slices of the same sample. |
 | `fineweb_edu_sample10bt_stream` | same | Streaming variant — same offsets / limits but consumed via `datasets` streaming when the full sample doesn't fit on disk. |
 | `fineweb_edu_sample10bt_local_v7` | local JSONL under `data/third_corpus_v7/*.jsonl` | The v7 frozen offline snapshot. |
@@ -143,13 +143,13 @@ folder and are referenced by closure reports under their `_v*` name.
 
 | Folder | What this round was for |
 |---|---|
-| [`configs/scale_heterogeneity_v5/`](configs/scale_heterogeneity_v5/) | First scaling-up round. Same WikiText-103 corpus, larger model, longer schedule than the screening / trajectory benchmarks. Establishes the "real but narrow" signal on a single corpus. |
-| [`configs/scale_heterogeneity_v6/`](configs/scale_heterogeneity_v6/) | Adds a second corpus — `openwebtext10k` (and supporting C4 / FineWeb runs) — to test whether the signal transfers across corpora at the same model size. |
-| [`configs/scale_heterogeneity_v7/`](configs/scale_heterogeneity_v7/) | Switches the main corpus to `cc_news` (the only corpus that survived) and to `fineweb_edu_sample10bt_local_v7` for the third-corpus diversity check. Introduces the *candidate-conditioned ranker* line — `train_candidate_conditioned_ranker_v7.py` consumes these configs. Includes resume-from-checkpoint variants for incremental scaling. |
+| [`configs/scale_heterogeneity_v5/`](configs/scale_heterogeneity_v5/) | First scaling-up round. Moves to a `24x512` model on the `cc_news` corpus with a longer schedule than the screening / trajectory benchmarks. Establishes the initial signal on the narrow corpus that the later rounds harden. |
+| [`configs/scale_heterogeneity_v6/`](configs/scale_heterogeneity_v6/) | Adds additional corpora — `wikitext103` and `openwebtext10k` — at the same `24x512` scale to test whether the signal transfers across corpora. |
+| [`configs/scale_heterogeneity_v7/`](configs/scale_heterogeneity_v7/) | Returns the main corpus to `cc_news` (the only corpus where the edge survived) and adds `fineweb_edu_sample10bt_local_v7` for the third-corpus diversity check. Introduces the *candidate-conditioned ranker* line — `train_candidate_conditioned_ranker_v7.py` consumes these configs. Includes resume-from-checkpoint variants for incremental scaling. |
 | [`configs/scale_heterogeneity_v8/`](configs/scale_heterogeneity_v8/) | Tightens the v7 setup: STP regularizer sweeps, longer schedules, fresh selectors and ranker trainings on the narrow corpus to confirm the quality edge holds across seeds. |
 | [`configs/scale_heterogeneity_v9/`](configs/scale_heterogeneity_v9/) | Final round. Introduces *lockbox* validation splits (validation documents the selector and the ranker have never seen). Confirms the narrow quality edge survives the lockbox check, and produces the joint quality + latency measurement that shows the wall-clock loss. |
 
-`v5 → v9` is roughly: *one corpus, bigger model* (v5) → *more corpora,
+`v5 → v9` is roughly: *cc_news, bigger model* (v5) → *more corpora,
 same model* (v6) → *narrow corpus + candidate-conditioned selector*
 (v7) → *seed-stability and stronger selector* (v8) → *lockbox split +
 quality vs latency* (v9).
