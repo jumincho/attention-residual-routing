@@ -1,3 +1,37 @@
+"""Per-block sublayer activity masks — the routing vocabulary.
+
+The whole experiment turns on *which sub-layers are active on this input*.
+This module is the canonical place where that idea is encoded. Every routing
+script and every evaluation script talks about decisions in terms of
+:class:`SublayerMask` objects.
+
+The vocabulary:
+
+- :class:`SublayerMask` carries two boolean tuples of length ``num_blocks``:
+  ``attn_mask`` (attention sub-layer active per block) and ``mlp_mask`` (MLP
+  sub-layer active per block).
+- :attr:`SublayerMask.action_types` maps each block to one of the four
+  routing actions referenced everywhere: ``full`` (run both), ``skip_attn``
+  (drop attention, keep MLP), ``skip_mlp`` (keep attention, drop MLP),
+  ``skip_block`` (drop both).
+- :meth:`SublayerMask.to_id` produces a stable string id of the form
+  ``attn:1101|mlp:1011`` — that string is the key used in JSON / CSV /
+  manifests for the candidate-conditioned ranker and the deployment reports.
+  :func:`from_id` parses it back.
+
+Convenience builders:
+
+- :func:`from_block_mask` lifts a per-block on/off vector to a full mask.
+- :func:`enumerate_local_edits` generates the candidate set around an anchor
+  mask (used by the v7 candidate-conditioned ranker).
+- :func:`edit_distance` / :func:`per_block_action` / :func:`apply_action`
+  are the small graph helpers the search uses.
+
+Cost helpers — :func:`estimated_decode_cost` and
+:func:`estimated_reduction_ratio` — turn an arbitrary mask into a predicted
+relative FLOP cost given measured per-block ``full`` / ``attn`` / ``mlp``
+sub-costs; that is the input to the FLOP-budgeted analyses.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
