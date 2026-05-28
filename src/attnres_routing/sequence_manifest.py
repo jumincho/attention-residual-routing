@@ -1,3 +1,31 @@
+"""Reproducible per-document window manifests for routing evaluation.
+
+Routing experiments need a *fixed*, *named* set of evaluation sequences: a
+specific document split, a specific stride into it, specific window
+indices, a stable id per window. This module owns building and loading
+those manifests — it sits one level above :mod:`attnres_routing.data` and
+adds the document-level structure that the dataloader path discards.
+
+What lives here:
+
+- :func:`load_documents` / :func:`load_all_documents` — turn an HF dataset
+  into a list of document dicts ``{title, text, document_idx,
+  source_split}``. Knows the WikiText-103 ``= title =`` heading
+  convention, the JSONL local-files path used by ``_local_v7``, and the
+  streaming path used by ``fineweb_edu_sample10bt_stream``.
+- :func:`document_uid` — stable SHA-1-based document id used by lockbox
+  manifests to keep evaluation rows tied to source documents.
+- :func:`build_document_window_records` /
+  :func:`build_window_records` — tokenize a document with the configured
+  tokenizer and slice it into ``(prompt_len + decode_len)``-token
+  windows, capped at ``max_windows_per_doc`` per document. The output is
+  the JSONL row format every routing-evaluation script consumes.
+- :func:`save_manifest_jsonl` / :func:`load_manifest_jsonl` — disk format.
+
+The "lockbox" manifests (built by ``scripts/build_lockbox_manifests_v9``)
+are simply manifests for splits the routing selectors were never trained
+or selected on — see ``GLOSSARY.md``.
+"""
 from __future__ import annotations
 
 import hashlib
