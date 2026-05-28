@@ -10,7 +10,7 @@
 ![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
 ![Closure](https://img.shields.io/badge/closure-2026--03-blue)
 
-**한국어** · [English](#english)
+**한국어** · [English](#english) · [中文](./README.zh-CN.md)
 
 </div>
 
@@ -46,6 +46,7 @@
 
 ## 다시 들여다볼 때는 어디부터
 
+- 📖 [`GLOSSARY.md`](GLOSSARY.md) — 소스·설정·최종 보고서에 그대로 살아남은 내부 용어(데이터셋 별칭, 서브레이어 마스크 표기, 라우팅 점수 모드, `_v5`~`_v9` 라운드, lockbox 등)를 풀어 둔 문서
 - 🇰🇷 [`reports/PROJECT_FINAL_REPORT_KO.md`](reports/PROJECT_FINAL_REPORT_KO.md) — 한 편 분량의 최종 보고서
 - [`src/attnres_routing/`](src/attnres_routing/) — 모델, 라우팅, 데이터, 분석의 핵심 라이브러리
 - 후기 설정 폴더 안의 YAML 들이 마지막 단계의 실험 형태를 가장 잘 보여 줍니다
@@ -74,6 +75,7 @@
 ├── scripts/               학습·평가·집계·파이프라인 진입점들
 ├── configs/               라운드별 실험 설정
 ├── reports/               최종 보고서 (한국어 / 영문)
+├── GLOSSARY.md            내부 용어 해설
 └── requirements.txt
 ```
 
@@ -130,6 +132,7 @@ The signal is real and produces a reproducible — though narrow — quality edg
 
 ### Where to look first when revisiting
 
+- 📖 [`GLOSSARY.md`](GLOSSARY.md) — decodes the internal vocabulary (dataset aliases, sublayer-mask format, routing score modes, `_v5`–`_v9` rounds, lockbox, candidate-conditioned ranker, etc.) used across source, configs, and reports.
 - 🇬🇧 [`reports/PROJECT_FINAL_REPORT_EN.md`](reports/PROJECT_FINAL_REPORT_EN.md) — full final report.
 - [`src/attnres_routing/`](src/attnres_routing/) — core library (model, routing, data, analysis).
 - The YAMLs in the late-round config folders are the cleanest snapshot of the final experimental shape.
@@ -158,6 +161,7 @@ The signal is real and produces a reproducible — though narrow — quality edg
 ├── scripts/               training, evaluation, aggregation entrypoints
 ├── configs/               per-round experiment configs
 ├── reports/               final reports (KO / EN)
+├── GLOSSARY.md            internal vocabulary
 └── requirements.txt
 ```
 

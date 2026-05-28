@@ -1,3 +1,31 @@
+"""Summary metrics, rank statistics, and figure helpers.
+
+Once a model has run with ``record_mode != "none"``, every layer's
+:class:`~attnres_routing.model.DepthMix` head produces depth-axis weight
+matrices. This module turns those raw weights into the per-source ``utility``
+and the rank-overlap statistics that show up in the closure reports.
+
+What lives here:
+
+- :func:`compute_utility_from_records` / :func:`compute_chunk_utility` —
+  collapse the recorded ``(source_id, weights)`` traces into a per-source
+  "how often / how much was this depth read from" scalar, optionally
+  centered against the uniform baseline so positive values mean "above
+  uniform usage." :class:`UtilitySummary` packages the full-prompt utility
+  plus per-chunk utility / variance / top-k frequency — those three are the
+  inputs to the routing-score modes in :mod:`attnres_routing.routing`.
+- :func:`topk_overlap`, :func:`recall_at_k`, :func:`ndcg_at_k`,
+  :func:`_safe_rank_corr` — the rank-quality metrics used to compare a
+  predicted score vector against an oracle score vector. Used by the
+  prompt-vs-decode transfer analyses.
+- :func:`summarize_prompt_decode_transfer` — bundles spearman / kendall /
+  jaccard / recall / nDCG into the single dict that ends up as one row in
+  ``depth_support_raw.csv``.
+- :func:`bootstrap_mean_ci` — the bootstrap CI helper every "mean ± CI"
+  cell in the reports goes through.
+- :func:`write_depth_support_outputs` and :func:`save_json` — the IO side
+  that drops the CSV / PNGs that the reports embed.
+"""
 from __future__ import annotations
 
 import json

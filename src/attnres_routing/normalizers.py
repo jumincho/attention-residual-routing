@@ -1,3 +1,27 @@
+"""Depth-axis normalizers for the block-attention-residual mixing layer.
+
+When the model runs in ``residual_mode="block_attnres"``, every block has a
+:class:`~attnres_routing.model.DepthMix` head that turns per-source logits
+into per-source weights along the depth axis. *This* module owns the
+candidate normalizers that head can pick from. Which one is used at training
+time is controlled by ``AttnResConfig.depth_normalizer`` and the per-mode
+``depth_temperature`` / ``topk_softmax_k`` settings.
+
+Modes:
+
+- ``softmax`` / ``temperature_softmax`` — standard temperature-scaled softmax
+  along the depth axis. Always-dense weights, easiest baseline.
+- ``sparsemax`` — Martins & Astudillo's sparse projection. Can return exact
+  zeros, so unused depth sources get masked out cleanly.
+- ``entmax15`` — α=1.5 entmax. Sits between softmax (dense) and sparsemax
+  (very sparse); used as the in-between knob in the late rounds.
+- ``topk_softmax`` — softmax restricted to the top-``k`` depth sources;
+  everything else is forced to zero pre-softmax. Drives the family of
+  experiments where the model is *required* to read from few depths.
+
+``depth_normalize`` is the single dispatcher all of those go through, so
+:mod:`attnres_routing.model` only ever calls one entry point.
+"""
 from __future__ import annotations
 
 from typing import Optional
