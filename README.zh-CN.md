@@ -26,7 +26,7 @@
 - 可以根据该信号为每个输入做出不同的跳层决定。
 - 由此既能保持质量，又能减少计算量和实际推理时延。
 
-我们从小规模开始，逐步扩展到更大的模型和更多样的数据集（WikiText、TinyStories、OpenWebText、FineWeb、CC News 等）来验证。
+我们从小规模开始，逐步扩展到更大的模型和更多样的数据集（WikiText、TinyStories、OpenWebText、FineWeb-Edu、CC News 等）来验证。
 
 ## 我们发现了什么
 
@@ -58,7 +58,7 @@
 | 文件 | 它在做什么 |
 |---|---|
 | [`src/attnres_routing/model.py`](src/attnres_routing/model.py) | 解码器模型 + 注意力残差栈（标准 / `block_attnres` 两种残差模式） |
-| [`src/attnres_routing/routing.py`](src/attnres_routing/routing.py) | 决定跳哪几层的路由逻辑、决码计时、KV-cache 过滤 |
+| [`src/attnres_routing/routing.py`](src/attnres_routing/routing.py) | 决定跳哪几层的路由逻辑、解码计时、KV-cache 过滤 |
 | [`src/attnres_routing/analysis.py`](src/attnres_routing/analysis.py) | 把记录下来的深度权重整理成 per-source utility 和排序统计量 |
 | [`src/attnres_routing/data.py`](src/attnres_routing/data.py) | 数据集别名、加载、tokenize、按 `seq_len` 打包 |
 | [`src/attnres_routing/sequence_manifest.py`](src/attnres_routing/sequence_manifest.py) | 训练 / 验证 / lockbox 切分的 manifest 构建 |
