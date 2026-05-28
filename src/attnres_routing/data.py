@@ -1,3 +1,33 @@
+"""Dataset plumbing for the attention-residual-routing experiment.
+
+Every dataset the closure reports name (TinyStories, WikiText-103,
+OpenWebText-10k, C4-en, CC-News, FineWeb-Edu sample-10BT) is registered in
+``DATASET_ALIASES`` under a short alias. Configs and CLI args refer to those
+aliases by string — that is the *only* surface that names a dataset. The
+``_v7`` and ``_local`` / ``_stream`` suffix variants exist because of how
+each round consumed the dataset (see ``GLOSSARY.md`` for the rounds), and
+they are kept on purpose so closure reports that name them still resolve.
+
+What this module owns:
+
+- :data:`DATASET_ALIASES` — the alias → ``{path, name, splits, ...}`` map.
+- :class:`DataConfig` — the dataclass training reads from a YAML config.
+- :func:`load_tokenizer` — fast HF tokenizer with HF_TOKEN auto-pickup and
+  pad-token fallback to EOS (GPT-2 tokenizer has no pad token by default).
+- :func:`prepare_lm_datasets` / :func:`prepare_lm_dataset_splits` — turn a
+  ``DataConfig`` into tokenized, packed-to-``seq_len`` train/val/test
+  splits ready for the LM dataloader.
+- :class:`LanguageModelCollator` — minimal collator that mirrors
+  ``input_ids`` into ``labels`` (causal LM).
+- The internal split / streaming / local-files dispatch handles three
+  loading modes: regular HF download, HF streaming (used for
+  ``fineweb_edu_sample10bt_stream``), and JSONL on disk (used for the
+  ``_local_v7`` variant).
+
+This module deliberately does not own the per-document window manifests
+used by routing evaluation — see :mod:`attnres_routing.sequence_manifest`
+for that.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
