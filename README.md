@@ -26,7 +26,7 @@
 - 그 신호를 보고 입력마다 다른 건너뛰기 결정을 내릴 수 있다
 - 결과적으로 같은 품질을 유지하면서 계산량과 실제 추론 시간까지 줄일 수 있다
 
-스몰 스케일에서 시작해 점차 더 큰 모델, 더 다양한 데이터셋(WikiText, TinyStories, OpenWebText, FineWeb, CC News 등)으로 확장하며 검증했습니다.
+스몰 스케일에서 시작해 점차 더 큰 모델, 더 다양한 데이터셋(WikiText, TinyStories, OpenWebText, FineWeb-Edu, CC News 등)으로 확장하며 검증했습니다.
 
 ## 무엇을 알아냈나
 
@@ -60,6 +60,10 @@
 | [`src/attnres_routing/analysis.py`](src/attnres_routing/analysis.py) | 요약 지표와 통계 |
 | [`src/attnres_routing/data.py`](src/attnres_routing/data.py) | 데이터셋 준비 |
 | [`src/attnres_routing/sequence_manifest.py`](src/attnres_routing/sequence_manifest.py) | 학습/검증/잠금(lockbox) 분할 매니페스트 생성 |
+| [`src/attnres_routing/sublayer_masks.py`](src/attnres_routing/sublayer_masks.py) | `SublayerMask`, `action_types`, `to_id()` 인코딩, 후보 마스크 열거, FLOP 추정 |
+| [`src/attnres_routing/normalizers.py`](src/attnres_routing/normalizers.py) | 깊이축 정규화 함수(`softmax` / `sparsemax` / `entmax15` / `topk_softmax`) |
+| [`src/attnres_routing/train.py`](src/attnres_routing/train.py) | LM 사전학습 루프(DDP / AMP / cosine LR / STP 정규화) |
+| [`src/attnres_routing/utils.py`](src/attnres_routing/utils.py) | 시드 고정, YAML I/O, 디렉터리 생성, HF token, cosine LR, 파라미터 카운트 |
 | [`scripts/train_lm.py`](scripts/train_lm.py) | 기본 학습 진입점 |
 | [`scripts/evaluate_functional_oracles.py`](scripts/evaluate_functional_oracles.py) | 이상적인 정책을 oracle 로 두고 평가 |
 | [`scripts/evaluate_prompt_routing.py`](scripts/evaluate_prompt_routing.py) | 초기 형태의 입력별 라우팅 평가 |
@@ -112,7 +116,7 @@ Three core hypotheses:
 - That signal supports per-input skip decisions.
 - The skipping cuts compute and real wall-clock latency while preserving quality.
 
-Tested at small scale first, then scaled up to larger models and more diverse corpora (WikiText, TinyStories, OpenWebText, FineWeb, CC News, etc.).
+Tested at small scale first, then scaled up to larger models and more diverse corpora (WikiText, TinyStories, OpenWebText, FineWeb-Edu, CC News, etc.).
 
 ### What it found
 
@@ -146,6 +150,10 @@ The signal is real and produces a reproducible — though narrow — quality edg
 | [`src/attnres_routing/analysis.py`](src/attnres_routing/analysis.py) | Summary metrics and statistics |
 | [`src/attnres_routing/data.py`](src/attnres_routing/data.py) | Dataset preparation |
 | [`src/attnres_routing/sequence_manifest.py`](src/attnres_routing/sequence_manifest.py) | Train / val / lockbox split manifests |
+| [`src/attnres_routing/sublayer_masks.py`](src/attnres_routing/sublayer_masks.py) | `SublayerMask`, `action_types`, `to_id()` encoding, candidate enumeration, FLOP estimation |
+| [`src/attnres_routing/normalizers.py`](src/attnres_routing/normalizers.py) | Depth-axis normalizers (`softmax` / `sparsemax` / `entmax15` / `topk_softmax`) |
+| [`src/attnres_routing/train.py`](src/attnres_routing/train.py) | LM pretraining loop (DDP / AMP / cosine LR / STP regularizer) |
+| [`src/attnres_routing/utils.py`](src/attnres_routing/utils.py) | Seeding, YAML I/O, dir creation, HF token, cosine LR, parameter counting |
 | [`scripts/train_lm.py`](scripts/train_lm.py) | Base training entrypoint |
 | [`scripts/evaluate_functional_oracles.py`](scripts/evaluate_functional_oracles.py) | Evaluation against oracle policies |
 | [`scripts/evaluate_prompt_routing.py`](scripts/evaluate_prompt_routing.py) | Early per-input routing evaluation |
