@@ -1,3 +1,24 @@
+"""Small utilities shared across the experiment.
+
+This module is intentionally narrow: it owns the boring helpers that nearly
+every other module in :mod:`attnres_routing` reaches for, and nothing else.
+Keeping them in one place means training, evaluation, and analysis all agree
+on seeding, config I/O, directory creation, and the learning-rate schedule.
+
+What lives here:
+
+- :func:`set_seed` — seeds Python, NumPy, and Torch (CPU + CUDA) together so
+  that a single integer is the only knob a config has to set.
+- :func:`load_yaml` / :func:`save_yaml` — round-trip the per-experiment YAML
+  configs in ``configs/`` (including the ``scale_heterogeneity_v*`` rounds).
+- :func:`ensure_dir` — create an output directory and return it as a
+  :class:`pathlib.Path`; used for results / plots / checkpoints.
+- :func:`resolve_hf_token` — read ``HF_TOKEN`` or
+  ``HUGGINGFACE_HUB_TOKEN`` for gated datasets (FineWeb-Edu in particular).
+- :func:`count_parameters` — parameter count used in training summaries.
+- :func:`cosine_lr` — cosine learning-rate schedule with linear warmup that
+  :mod:`attnres_routing.train` applies per step.
+"""
 from __future__ import annotations
 
 import math
