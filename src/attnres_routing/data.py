@@ -3,10 +3,7 @@
 Every dataset the closure reports name (TinyStories, WikiText-103,
 OpenWebText-10k, C4-en, CC-News, FineWeb-Edu sample-10BT) is registered in
 ``DATASET_ALIASES`` under a short alias. Configs and CLI args refer to those
-aliases by string — that is the *only* surface that names a dataset. The
-``_v7`` and ``_local`` / ``_stream`` suffix variants exist because of how
-each round consumed the dataset (see ``GLOSSARY.md`` for the rounds), and
-they are kept on purpose so closure reports that name them still resolve.
+aliases by string — that is the *only* surface that names a dataset.
 
 What this module owns:
 
