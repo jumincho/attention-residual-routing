@@ -8,13 +8,21 @@
 ![Status](https://img.shields.io/badge/status-dormant-lightgrey)
 ![Language](https://img.shields.io/badge/language-Python-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
-![Closure](https://img.shields.io/badge/closure-2026--03-blue)
+![Closure](https://img.shields.io/badge/closure-2026--05-blue)
 
 [한국어](./README.md) · [English](./README.md#english) · **中文**
 
 </div>
 
 > 🧊 **这是一个处于休眠状态的研究探索性项目。**
+
+### 快速开始
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m py_compile src/attnres_routing/*.py   # 安装验证
+```
 
 ## 这项研究想看的是什么
 
@@ -72,6 +80,8 @@
 | [`scripts/train_candidate_conditioned_ranker_v7.py`](scripts/train_candidate_conditioned_ranker_v7.py) | 后期成为主线的"候选条件 ranker"训练 |
 | [`scripts/evaluate_deployment_measurement_v7.py`](scripts/evaluate_deployment_measurement_v7.py) | 同时测量质量和实际延迟 |
 | [`scripts/build_lockbox_manifests_v9.py`](scripts/build_lockbox_manifests_v9.py) | 生成从未见过的验证切分（lockbox） |
+
+以上列出的是核心入口脚本，`scripts/` 目录中的其余文件是 v5–v9 实验流水线运行器，保留供参考。
 
 完整的术语（数据集别名、子层掩码、分数模式、`_v7` 后缀的含义等）请参见
 📖 [`GLOSSARY.md`](GLOSSARY.md)。

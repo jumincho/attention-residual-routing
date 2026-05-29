@@ -8,13 +8,21 @@
 ![Status](https://img.shields.io/badge/status-dormant-lightgrey)
 ![Language](https://img.shields.io/badge/language-Python-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
-![Closure](https://img.shields.io/badge/closure-2026--03-blue)
+![Closure](https://img.shields.io/badge/closure-2026--05-blue)
 
 **한국어** · [English](#english) · [中文](./README.zh-CN.md)
 
 </div>
 
 > 🧊 **휴면(dormant) 중인 연구 파일럿입니다.**
+
+### 빠른 시작
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m py_compile src/attnres_routing/*.py   # 설치 확인
+```
 
 ## 무엇을 보려던 연구였나
 
@@ -71,6 +79,8 @@
 | [`scripts/evaluate_deployment_measurement_v7.py`](scripts/evaluate_deployment_measurement_v7.py) | 품질과 실제 지연 시간을 함께 측정 |
 | [`scripts/build_lockbox_manifests_v9.py`](scripts/build_lockbox_manifests_v9.py) | 새로 본 적 없는 검증 분할 생성 |
 
+위에 나열된 스크립트들은 핵심 진입점이며, `scripts/` 안의 나머지 파일들은 참고 보존을 위해 남겨 둔 v5–v9 실험 파이프라인 러너들입니다.
+
 ## 폴더 지도
 
 ```
@@ -105,6 +115,14 @@ export HF_TOKEN=...   # 필요한 경우에만
 ## English
 
 > 🧊 **Dormant research pilot.**
+
+### Quickstart
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m py_compile src/attnres_routing/*.py   # sanity check
+```
 
 ### What this set out to test
 
@@ -160,6 +178,8 @@ The signal is real and produces a reproducible — though narrow — quality edg
 | [`scripts/train_candidate_conditioned_ranker_v7.py`](scripts/train_candidate_conditioned_ranker_v7.py) | Late-round candidate-conditioned selector training |
 | [`scripts/evaluate_deployment_measurement_v7.py`](scripts/evaluate_deployment_measurement_v7.py) | Joint quality + latency measurement |
 | [`scripts/build_lockbox_manifests_v9.py`](scripts/build_lockbox_manifests_v9.py) | Unseen validation split construction |
+
+The scripts listed above are the core entry points; the remaining files in `scripts/` are v5–v9 experiment pipeline runners kept for reference.
 
 ### Folder map
 
