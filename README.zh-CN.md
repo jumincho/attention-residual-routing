@@ -8,7 +8,7 @@
 ![Status](https://img.shields.io/badge/status-dormant-lightgrey)
 ![Language](https://img.shields.io/badge/language-Python-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
-![Closure](https://img.shields.io/badge/closure-2026--05-blue)
+![Closure](https://img.shields.io/badge/closure-2026--03-blue)
 
 [한국어](./README.md) · [English](./README.md#english) · **中文**
 
