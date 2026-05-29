@@ -24,6 +24,12 @@ pip install -r requirements.txt
 python -m py_compile src/attnres_routing/*.py   # 설치 확인
 ```
 
+## ⭐ 핵심 결과 (TL;DR)
+
+- **어텐션 잔차 신호는 실재**합니다 — 입력별로 필요한 깊이가 측정 가능하게 다릅니다.
+- 그러나 일반적 건너뛰기 정책으로는 정적 baseline을 못 이겼고, **`cc_news` 한 코퍼스에서만** 여러 시드·lockbox에 걸쳐 재현되는 **좁은 품질 우위**가 남았습니다.
+- **실제 추론 속도는 빨라지지 않았습니다** — 동적 건너뛰기 오버헤드로 wall-clock은 정적보다 오히려 느렸습니다.
+
 ## 무엇을 보려던 연구였나
 
 언어모델 안의 여러 층(layer)이 모든 입력에 대해 항상 똑같이 일을 하는 건 아닙니다. 어떤 문장은 깊은 층까지 가야 풀리고, 어떤 문장은 얕은 층에서 끝나도 됩니다. 그렇다면 **모델 내부의 어떤 신호를 보고 "이 입력에는 깊은 층이 필요한지" 를 판단해, 불필요할 때는 일부 층을 건너뛰게 할 수 있을까** — 가 출발 질문이었습니다.
@@ -123,6 +129,12 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python -m py_compile src/attnres_routing/*.py   # sanity check
 ```
+
+### ⭐ Key result (TL;DR)
+
+- The attention-residual signal is **real** — per-input depth need is measurably different.
+- But as a general skip policy it didn't beat a static baseline; only a **narrow quality edge on one corpus (`cc_news`)** survived across seeds and a fresh lockbox split.
+- It **never became faster** — dynamic-skip overhead made wall-clock latency worse than the static policy.
 
 ### What this set out to test
 
