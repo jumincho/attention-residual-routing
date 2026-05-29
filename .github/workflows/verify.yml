@@ -67,3 +67,25 @@ jobs:
             echo "::error::Potential secret detected in tracked source"
             exit 1
           fi
+
+  imports:
+    name: Import resolvability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The pinned torch stack is CUDA; install the matching CPU wheels first so
+      # the rest of requirements.txt resolves against them (keeps CI lean).
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 \
+            --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+
+      - name: All top-level imports resolve
+        run: python tools/check_imports.py
