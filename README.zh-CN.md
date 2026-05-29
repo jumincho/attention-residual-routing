@@ -7,6 +7,7 @@
 
 ![Status](https://img.shields.io/badge/status-dormant-lightgrey)
 ![Language](https://img.shields.io/badge/language-Python-3776AB?logo=python&logoColor=white)
+[![Verify](https://github.com/jumincho/attention-residual-routing/actions/workflows/verify.yml/badge.svg)](https://github.com/jumincho/attention-residual-routing/actions/workflows/verify.yml)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
 ![Closure](https://img.shields.io/badge/closure-2026--03-blue)
 
